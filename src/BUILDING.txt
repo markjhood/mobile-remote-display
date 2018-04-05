@@ -1,0 +1,79 @@
+On Linux, the standard `make; sudo make install' command sequence will build
+the remote-jblend and demotest binaries and install them into /usr/local.  On
+a Mac OS X system the same command sequence builds the binaries as well as the
+self-contained app bundles (remote-jblend.app, Remote Demo Setup.app, and
+Proximity.app), and then installs the app bundles into /Applications.  
+
+`sudo' isn't necessary on a Mac as users by default have write permissions
+into the /Applications folder.  The Makefile also provides a `dmg' target to
+create a compressed Mac OS X disk image holding all the app bundles.
+
+The Makefile's default target will build the binaries with -O3 optimization;
+the `debug' target will build them with debug symbols.  The build has only
+been tested on Ubuntu 8.04 and Mac OS X 10.6.2, but other flavors of Linux and
+Mac OS X should probably work as well.
+
+Ubuntu
+------
+
+The JBlend remote display project uses gtk+-2.0 development libraries.  If
+these libraries are not available on your Ubuntu system, they can be retrieved
+using the Synaptic Package Manager (System > Administration in the Ubuntu menu
+bar).  Run the package manager and search for libgtk2.0-dev, select it for
+install, and then apply the changes.  
+
+The "install" target in the Makefile will build the optimized executables and
+install them along with some shell scripts in /usr/local/bin, along with the
+required image files in /usr/local/share/remote-jblend.  You'll have to create
+the install target with "sudo make install" and supply your login password.  A
+set of pre-configured desktop launcher icons will also be copied to your Gnome
+Desktop.
+
+You will also need to install the BlueProximity software to launch the remote
+display based on the proximity of the phone.  A copy is included in the
+proximity/linux directory, but the best way to install BlueProximity and its
+dependencies is to use the Synaptic Package Manager.  Search for blueproximity
+in the package manager, select it for install, and apply.
+
+Mac OS X
+--------
+
+The project can also be built on Mac OS X 10.6, but only if the GTK-OSX
+jhbuild system has been installed. http://gtk-osx.sourceforge.net hosts all
+the information necessary to set it up.  An attempt was made to support Mac OS
+X 10.5 and 10.4 in a cross-platform app bundle, but the results seem to only
+be compatible with 10.6.
+
+GTK-OSX builds the gtk libraries required to create the binaries, and will
+also edit the external symbol linkage so that the gtk libraries can be
+packaged together with the binaries in a self-contained app bundle.  The app
+bundle can be deployed to other OS X 10.6 machines and run without installing
+the gtk libraries separately.  GTK-OSX also provides libraries that allow the
+gtk application to integrate into OS X 10.6 desktop UI elements such as the
+Dock and the menu bar.
+
+If the build machine is 10.6 (Snow Leopard), make sure that you build for
+32-bit binaries (i386 architecture) since Snow Leopard always defaults to
+64-bit binaries (x86_64 architecture), and 64-bit binaries are currently not
+compatible with the GTK-OSX integration tools.  Set up GTK-OSX for 32-bit
+builds by replacing the original setup_sdk() line in ~/.jhbuildrc-custom
+with the following:
+
+moduleset = "http://github.com/jralls/gtk-osx-build/raw/master/modulesets-stable/gtk-osx.modules"
+setup_sdk(target="10.4", sdk_version="10.4u", architectures=["i386"])
+
+Also make sure that the "UNIX Dev Support" and "Mac OS X 10.4 Support"
+packages are included when installing Xcode 3.2 on Snow Leopard.
+
+Follow the GTK-OSX building instructions up to building the gimp program, and
+then try running $HOME/gtk/inst/bin/gtk-demo to test the installation.
+
+At that point you can then use the Makefile to build the remote display
+project, as long as you set JHBUILD_PREFIX pointing to the directory that
+GTK-OSX normally installs the gtk libs into ($HOME/gtk/inst is the default).
+
+The "install" target builds all the app bundles (remote-jblend.app, Remote
+Demo Setup.app, and Proximity.app) and copies them to the /Applications
+directory.  The "dmg" target builds the same app bundles and copies them into
+a compressed disk image.  The build products are deposited in the build/Darwin
+directory.

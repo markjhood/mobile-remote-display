@@ -1,0 +1,92 @@
+		MIDP 3 Remote Display Discovery and Usage Demo
+			  2010 Mobile World Congress
+		     Proposed Implementation Breakdown
+
+Rev: January 18, 2010, V0.2
+
+The demo work can be divided amongst five logical teams.  However, depending
+upon resources and expertise, the five logical areas could actually be
+implemented by fewer teams.  The areas of expertise required are: networking;
+JBlend on Windows Mobile internals; generic midlet programming; and general
+graphics application programming on either Windows, Mac OS X, or Linux.
+
+I estimate this will require 4 person-weeks of work for SFO and 6 person-weeks
+for TPO.
+
+1) JBlend internals team: 2 person-weeks TPO
+
+This team needs to implement the Auxiliary Display functions in JBlend on
+Windows Mobile.  This functional unit provides the following:
+
+  a) Responds to proximity events from the network layer; creates the
+     Auxiliary Display; updates the Display status and hardware state;
+     services registered DisplayListeners; responds to Display queries from
+     midlets.  
+
+  b) Maintains the state of Auxiliary Display as a memory-resident pixel
+     buffer in response to rendering commands.  Instead of appearing on the
+     primary Display, graphics sent to the Auxiliary Display are rendered in a
+     memory buffer.
+
+  c) Transfers the pixels on the Auxiliary Display over the network interface
+     implemented by team 2) below.  At a minimum the software must maintain
+     rectangular regions of modified and untouched pixels so mostly only the
+     pixels that are updated need to be transmitted.  The local pixel buffer
+     and remote Auxiliary Display are synchronized at intervals established by
+     the midlet application's calls to repaint itself.
+
+2) Network functionality teams: 2 person-weeks TPO; 1 person-week SFO
+
+We need two teams responsible for implementing the image transport protocol.
+
+One team based in SFO will handle all the work associated with the remote
+display host, which will be a laptop running Linux Ubuntu 8.04.  This includes
+launching the remote display software when Bluetooth proximity is detected and
+initiating communication with the handset over a persistent Wifi connection.
+
+The other team needs to have expertise in both JBlend internals and Windows
+mobile networking.  When the demo is started, JBlend needs to:
+
+  a) Open a configured IP address and port through Wifi and listen for a
+     connection. 
+
+  b) Once a connection is achieved, wait for a Display event from the remote
+     auxiliary display host.  Update the state of the handset's Auxiliary
+     Display and call back DisplayListeners.
+
+  c) Listen for key and pointer events from the remote display host and
+     dispatch them to interested midlets running on the handset.  Listen for
+     additional Display events that communicate changes in the status of the
+     remote display.
+
+  d) Accept IMAGE, BLIT, and FLUSH protocol commands from the Auxiliary
+     Display and transmit them to the remote display.
+
+  e) Shut down the connection when the demo is finished.
+
+3) Midlet programming team: 2 person-weeks TPO
+
+This team needs to create Auxiliary Display aware midlets that give a good
+sense of user experience we wish to demonstrate.  They will respond to
+DisplayListener events and configure themselves to display optimally on the
+Auxiliary Display when it becomes available, and to revert to the primary
+Display only when the Auxiliary Display becomes unavailable.
+
+These midlets may also need to call special functions to start and stop the
+remote Auxiliary Display discovery describe in 2).  Alternatively, JBlend
+could always search for an Auxiliary Display on startup.
+
+4) Auxiliary Display host: 1 person-week SFO
+
+SFO will implement the host software that will use the network interface
+developed by 2) above.  It will instantiate the UI window that will display
+the contents of the Auxiliary Display, initiate the network communication, and
+render the images that are delivered through the display connection.
+
+Ideally they will also implement the transmission of input events from the
+host Auxiliary Display back to the handset as well, though this is subject to
+time constraints.
+
+5) Image protocol design: done
+
+6) Integration and testing: 2 person-weeks SFO

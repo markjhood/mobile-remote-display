@@ -1,0 +1,113 @@
+-------------
+The Makefile in the src directory builds two programs.  These programs are
+built into the build/Linux/bin directory.  The install target in the Makefile
+by default copies these programs along with associated files in the images
+directory to /usr/local/bin and /usr/local/shared/remote-jblend; the latter
+directory is created if it doesn't exist.
+
+Typing `make' or `make debug' in the src directory will make these programs.
+Typing `sudo make install' will install them.  A few launcher icons will be
+copied into your Desktop directory as well.
+
+There are also two shell scripts that switch an Ubuntu WiFi interface from
+managed mode to ad-hoc mode and back, and a setup script that will get the
+necessary phone information from the user.  These are copied into the
+build/Linux/bin directory from src/scripts/Linux during a build and will get
+copied into /usr/local/bin when doing an install.
+
+
+-------------
+`remote-jblend' is the MIDP3 remote display.  
+
+  usage: remote-jblend [-port <n>] [-connect <ipaddr>] [-size <>] [-bg <0|1>]
+
+  The port should be a number between 1023 and 65536.  If no port is
+  supplied then 1301 is used.
+
+  The default is to listen for an incoming connection on the specified
+  port.  If an IP address is supplied with the '-connect' option then a
+  connection will be made to the specfied host instead.
+
+  If the '-size' option is used it must be followed by either: 0 to indicate
+  the normal 640x480 dashboard mockup window; 1 to indicate the larger
+  1024x768 dashboard mockup; or 2 indicate the 800x600 Slide Presentation
+  window.  The default size is the 640x480 dashboard.
+
+  If '-bg' is set to 1 then the program runs in the background,
+  otherwise it remains in the foreground.
+
+  Options can be abbreviated.  If only one argument is provided then it
+  is taken as the port number.
+
+
+`demotest' is a program for developing and testing the remote display.  
+
+  usage: demotest [-port <n>] [-connect <ipaddr>]
+
+  The port should be a number between 1023 and 65536.  If no port is
+  supplied then 1301 is used.
+
+  The default is to listen for an incoming connection on the specified
+  port.  If an IP address is supplied with the '-connect' option then
+  a connection will be made to the specfied host instead.
+
+  Options can be abbreviated.  If only one argument is provided then
+  it is taken as the port number.
+
+
+------------- 
+To run them choose one to be the listener and one to be client.  The listener
+only needs a port, while the client needs an IP address to connect to along
+with the port.  They are intended to be run on separate hosts but they can
+also be run on the same host in separate shells for convenience.
+
+When a connection is successfully established the remote display program will
+send a DISPLAY event (with a hardware state of ENABLED) to the demotest
+program, which will then start rendering an animation and sending the frames
+to the remote display.
+
+If the remote display program is killed with SIGTERM or closed through the
+window manager, then it will send a DISPLAY event (with a hardware state of
+ABSENT) to the demotest program before exiting.  The demotest program will
+continue to either listen for a new connection or actively poll the remote
+display ip address with an explicit connection request.
+
+If the remote display is restarted and a new connection is established then
+the demotest program will continue the animation where it left off once it
+receives a new DISPLAY event with hardware enabled.
+
+If the demotest program is killed while connected to the remote display, then
+the remote display will detect that the connection has been lost.  It will
+then hide itself while either polling or listening for a new connection.  Once
+a new connection is established it will show itself again.
+
+These programs were developed on Linux Ubuntu 8.04 but since they only use GTK
+and standard Unix system calls they should be portable to most Linux boxes.
+
+
+-------------
+The `blueproximity' software (http://www.ohloh.net/p/blueproximity) is used to
+launch the remote display.  A copy of the distribution is included in the
+src/proximity/Linux directory.  The easiest way to install the software is to
+download through the Synaptic package manager since it will also download all
+the libraries that blueproximity depends upon.  This can be accomplished
+through:
+
+Taskbar > System > Administration > Synaptic Package Manager
+
+Search for blueproximity.  Otherwise, consult the documentation in the
+blueproximity tarball, install the prerequisite software, and then install and
+run blueproximity manually.
+
+Once installed the software tracks the signal strength (RSSI) of a paired
+bluetooth handset or other device and then issues specified commands when
+proximity is attained and another when proximity is lost.
+
+For the actual demo the bluetooth device will be the phone running the
+multidisplay MIDP3 midlet.  When the remote display is launched by the
+blueproximity software it will immediately either start listening for an
+incoming socket connection from the handset, or poll a specified IP address to
+initiate the connection itself, and then send a DISPLAY ENABLED event to the
+handset.  When the blueproximity software detects loss of proximity it will
+signal the remote display to shutdown, which will then send a DISPLAY ABSENT
+event to the handset before exiting.

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Kill Remote Display Demo
+Type=Application
+Terminal=false
+Icon[en_US]=gnome-panel-launcher
+Name[en_US]=Kill Remote Display Demo
+Exec=sh -c "pkill remote-jblend;  kill `ps -ef | grep proximity.py | grep -v grep | awk '{print $2}'`"
+Icon=gnome-panel-launcher
+GenericName[en_US]=

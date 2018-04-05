@@ -1,0 +1,413 @@
+MWC 2010 remote display demo set up instructions - pre-loaded Ubuntu 8.04 laptop
+--------------------------------------------------------------------------------
+
+These are the instructions for setting up the MIDP3 Remote Display demo on the
+pre-loaded Ubuntu 8.04 laptops we've prepared.  The instructions should also
+be applicable to a fresh 8.04 laptop, and should also work with Ubuntu 10.04
+LTS, although the latter wasn't fully tested.
+
+If you are not interested in running the demo with the Bluetooth proximity
+launcher, or just want to run the Slide Presentation demo, then you can ignore
+all the instructions addressing Bluetooth setup.
+
+The distribution includes a setup script, remote-demo-setup.sh, that can be
+used to set the demo for a specific phone once Wifi and Bluetooth are
+configured.  It uses the BlueProximity config file to store the configuration
+parameters for the current phone, even if proximity detection is not used.
+You can of course run the demo from the command line if you read the doc for
+the command line parameters.
+
+To build the demo from source, see src/BUILDING.txt and src/Makefile.
+
+0) Booting the Linux laptop takes you to the OS loader.  By default Ubuntu
+   8.04 will boot.  If for any reason you need to run Windows XP (say to load
+   a new Java CAB or a midlet onto the phone) it's available for 10 seconds as
+   the last boot option on the OS loader screen
+
+   Login to Ubuntu as user "aplix" and use the same password that we use for
+   WiFi in SFO.  The same username/password will also work for Windows XP, but
+   the remote display only runs with Linux.
+
+1) If the laptop has bluetooth built in, make sure the laptop's bluetooth is
+   turned on.  There should be a bluetooth icon in the upper right
+   notification area of the desktop.  If not, use the Fn-F5 key combo to cycle
+   between bluetooth and WiFi, making sure both are on.  The devices take time
+   to initialize, so allow the state to settle after each keypress.
+
+   If Fn-F5 doesn't work then something is pretty messed up.  Try opening a
+   terminal and issuing the following command and cycling through Fn-F5 again
+   (it will prompt for your login password):
+
+   sudo echo enable > /proc/acpi/ibm/bluetooth
+
+   If you're using a bluetooth USB dongle, run the command 'hcitool dev' from
+   a terminal.  It should report the MAC address of the dongle, and 'hcitool
+   scan' should report all the powered-on bluetooth devices in proximity.  If
+   not, try another dongle.
+
+   Bluetooth USB adaptors known to work:
+
+   TDK Systems BRBLU03-002A0-03 (labled OS-HW-A2 by SFO)
+   Logitec Bluetooth 2.0+EDR LBT-UA300C1 (labled 8871)
+   Jabra A320s Bluetooth Stereo USB Adaptor 
+   Belkin Bluetooth USB Adaptor Model F8T012xx1
+
+2) Pairing a bluetooth handset to the laptop for the first time:
+   
+   a) open a terminal and type the following (optional, should be already done):
+
+      sudo gedit /etc/bluetooth/hcid.conf
+
+      Make sure that the Security Manager mode is "auto", Pairing mode is
+      "multi" and that there's an entry for the passkey.  Passkey should
+      already be "1301" and you'll need to enter this PIN on the device
+      later.  Save the file if you made any changes.
+
+   b) Right click on the bluetooth status icon and select Preferences.
+   c) Make sure "Visible and connectable for other devices" is selected in the
+      left-most tab.
+   d) In the Services tab select all the services.  Some phones won't pair if
+      they don't see a service they want.
+   e) In the General tab select everything and the "Only display when adaptor
+      present" option for the notification area.  Close the Preferences dialog.
+
+   On a Windows Mobile phone:
+
+   f) Settings > Connections > Bluetooth
+   g) Select the Mode tab, select "Turn on Bluetooth", and select "Make this
+      device visible to other devices".
+   h) Select the Timeout tab and select "Never".
+   i) Select the Devices tab and click on "Add new device..."
+   j) Select the laptop.  It should be the same name as the laptop name .
+      Select Next.  If no devices are found, try turning off Wi-Fi on the
+      phone.
+   k) Enter the passcode from hcid.conf.  It should be 1301 unless you changed
+      it in step a).  Select Next.
+   l) You should get a notification that the pair has been bonded, from both
+      the laptop and the phone.  If not, look over the instructions once more
+      and try again.  Sometimes the connections and handshaking just fail
+      randomly.
+
+   On the laptop again:
+
+   m) Right-click on the bluetooth notification icon to get Bluetooth
+      Preferences.  Look at the list of Bonded devices and the phone should be
+      there.  The name may be blank though (for some reason) but there should
+      be a key icon on the right of the perhaps blank name.  Select the new
+      device and click "Set Trusted".  Then close the Preferences dialog.
+
+   These settings might compromise the security of the phone and laptop, so
+   you can try making things more restrictive.  But at first you probably want
+   to increase the chances of successfully pairing.
+
+3) At this point, assuming the Remote Display demo software is installed, you
+   should be able to set up the device information for your phone and run the
+   demo by double clicking on the "Remote Display Demo Setup" launcher on the
+   Ubuntu desktop.
+
+   Once you've set up the device info for a specific phone you can run the
+   demo by starting BlueProximity from the launcher icon.  Note, however, that
+   BlueProximity will not launch the remote display until the phone goes out of
+   proximity and back in again.  To start the remote display immediately, use
+   the "Run Remote Display manually" launcher, or just launch the "Remote
+   Display Demo Setup" script and accept all the defaults.
+
+   If you need to build and install the software, see the file "BUILDING.txt"
+   in the src directory of the distribution.
+
+   Read on to learn the details of the demo setup and how to deal with
+   problems. 
+
+-----------------------------
+
+4) Set up the WiFi connection:
+
+   You can use an ad-hoc link-local WiFi connection between the phone and the
+   laptop so that we won't have to deal with wireless routers at the demo
+   site.  If you need networking to a LAN while using the laptop with the demo
+   in ad-hoc Wifi mode you'll need to keep a cable connected.
+
+   The "Remote Display Demo Setup" script will offer to set up an ad-hoc WiFi
+   network for you.  You can do this manually and try to debug the set up with
+   the following instructions:
+
+   a) Make sure the laptop WiFi is turned on and working.   You can test this
+      by clicking the network icon in the upper right corner notification area
+      and seeing if you get a list of wireless networks with associated signal
+      strengths, and you can try connecting to one.  If there doesn't seem to
+      be wireless available, do a right click on the network icon and make
+      sure that `Enable Wireless' is checked.
+
+   b) The laptop should always boot up with the WiFi in 'managed' mode,
+      meaning that it is configured to connect the laptop to a normal WiFi
+      access point.  If you're having problems with WiFi at this point, run
+      the 'iwconfig' command in a terminal and check the 'eth1' entry -- it
+      should say 'Mode:Managed'.  See below to change.
+
+   c) Run the supplied 'wifi-adhoc' script using sudo: 'sudo wifi-adhoc'.  It
+      should already be installed in /usr/local/bin; if for some reason it
+      isn't it should be available in the build/Linux/bin directory.  There
+      should also be be an icon labeled 'Start Ad-Hoc WiFi network' that you
+      can click, on the left side of the Ubuntu desktop.  You will need to
+      supply your login password.  The launcher runs the command 'gksudo
+      wifi-adhoc'.
+
+      To check the result, run 'iwconfig' in a terminal.  It should show the
+      eth1 interface as 'Mode:Ad-Hoc' and have an ESSID of with the name of
+      the laptop.
+
+      Use the 'wifi-managed' script to return to managed mode.  Normally you
+      won't need to do this unless you need to connect to a WLAN.  (You can
+      also run the demo fine while connected to a WLAN if you set the phone to
+      associate with the WLAN instead of the the ad-hoc laptop connection).
+      There should be a launcher on the desktop that runs the command 'gksudo
+      wifi-managed'.
+
+   On the Windows Mobile phone:
+
+   a) Settings > Connections tab > Wi-Fi
+
+   b) Select "Turn on Wi-Fi" and then click on "Wireless Networks".  
+
+   c) Under "Networks to access:" make sure you select "All Available" or
+      better, "Only computer-to-computer".  Choose the ESSID of the laptop, as
+      printed out by the 'iwconfig' command on the laptop.  Encryption is WEP,
+      and the key is in the 'wifi-adhoc' script (currently 1301130113).  Don't
+      try to turn off WEP: for some reason it seems to make connecting
+      impossible.
+
+   d) Return to Settings > Connections tab > Wi-Fi and click on "Advanced".
+      Select the "Advanced" tab and note the IP address.  You'll need this
+      later. Then hit OK.
+
+      There are some Windows Mobile phones (such as the Toshiba) that don't
+      appear to have a way to see the WiFi address.  On the Toshiba, you will
+      need to select the "Network Adaptors" tab in the Advanced Settings pane,
+      select the wireless networking adaptor, and then set an IP address
+      manually ("Use specific IP address").  Make sure that you set a
+      link-local address (169.254.xxx.yyy) and make sure that xxx.yyy doesn't
+      conflict with any other device.
+
+   e) Windows Mobile phones are sometimes very persistent in trying to connect
+      to previously established networks.  If this happens, select the network
+      it is trying to connect to, hit Cancel, and then use the Menu button in
+      the lower right to "Remove Settings" for that network.  
+
+      Even after removing the settings for a previous network the phone may
+      still refuse to connect to a new ad-hoc network.  This can sometimes be
+      cured by removing the settings for the new network, turning off WiFi on
+      the phone, turning off ad-hoc WiFi on the laptop, and then starting over
+      the connection process.  Also make sure that the power mode for WiFi on
+      the phone is set to "Best Performance."
+
+5) Bluetooth proximity setup: We are using an open source utility called
+   "BlueProximity", which was designed to turn screen locking on and off based
+   on the proximity of a selected bluetooth device.  Only one phone can be
+   configured for use at a time.  For first time use with a new device, or to
+   change devices, follow these steps.
+
+   a) There should be "BlueProximity" icon on the left edge of the screen.
+      Double click it to start the program, or alternatively run it from a
+      terminal:
+
+      blueproximity &
+
+   b) There should now be a new icon in the notification area in the upper
+      right of the desktop.  It will look like the bluetooth icon with a key.
+      If a configured device isn't found there will be a plug incorporated
+      into the icon.  If a configured device is found then the plug
+      disappears.
+
+   c) Click on the BlueProximity notification icon in the upper right of the
+      display to get to the Preferences dialog box.  Select the "Bluetooth
+      Device" tab.  The bluetooth MAC of the last device used should be in the
+      "MAC Address" field.  Check the MAC to see if it's the phone you want to
+      use.  
+
+   d) If you need to use a different phone, then you can either edit the
+      configuration file manually, use the "Remote Display Demo Setup" script,
+      or go through the blueproximity configuration GUI.  If you already know
+      the bluetooth MAC address of the desired phone it's a lot easier to edit
+      the config file manually or use the setup script.
+
+      To find the phone's bluetooth MAC address:
+
+      Settings > System tab > Device Information > Hardware tab
+
+      Some phones have slightly different ways to access this info though.
+
+      Close or kill blueproximity first.  The config file is
+      ~/.blueproximityrc.  Use the "Text Editor" application or Emacs to edit
+      this file.  Put in the bluetooth MAC address of the phone in the
+      device_mac attribute and choose channel 1 in the device_channel
+      attribute.  While you're editing this file you might as well add the
+      WiFi IP address of the phone to the remote-jblend command -- see item
+      6c) below.
+
+      If the channel doesn't work when you test it you can keep editing the
+      config file until you find one that does, or try the GUI configuration
+      below.  Valid channels are 1 - 30.
+
+      NOTE:
+
+      Always make sure blueproximity isn't running when you edit the
+      configuration file manually.  It has a tendency to overwrite the file at
+      seemingly random intervals.
+
+   e) To configure through the GUI (NOT RECOMMENDED): make sure the phone is
+      nearby, powered up, and then click "Scan for devices" in the "Bluetooth
+      Device" tab of the blueproximity Preferences dialog box.  For some
+      reason the dialog box may fade to blue and back several times.  The scan
+      may take a couple of minutes.  If it appears to hang, close or kill the
+      BlueProximity program and start again from step 4a).  You may need to
+      open a terminal and type:
+
+      pkill blueproximity
+
+      Once you have a device selected, optinally click on "Scan channels on
+      the device" if it is a new device.  You can usually just set the channel
+      to 1.  If you do scan, note that this step can take a long time (15
+      minutes) as the program tries to find an unused channel for
+      communication.  The Preferences dialog may fade to blue and back several
+      times, and the program will be mostly unresponsive during this time,
+      although you may be able to occasionally scroll down on the Channel list
+      to see if the program is making progress.  Don't let the phone power
+      down during this process.
+
+      You may want to check out the blueproximity manual during the scan.
+      There should be an icon on the desktop that you can double click.
+
+      In the end you may find all channels closed or denied.  Just choose
+      channel 1 to see if that works with the later steps.  Then close the
+      Preferences dialog, quit blueproximity (right-click on the notification
+      icon and choose quit).  
+
+      If this fails, edit the configuration file manually.
+
+   f) Verify that blueproximity is working by stopping and restarting the
+      program and looking at the notification icon.  If the phone is nearby,
+      powered up, and configured properly, the icon should have a green key.
+      Move the phone some 10 - 20 feet away and see if the key turns yellow,
+      then red to indicate that it believes the phone is out of proximity.
+
+6) Tuning the bluetooth proximity detection: Read the "Setup distance
+   detection" section of the blueproximity manual to fully understand the
+   detection thresholds, but keep in mind the original purpose of the program
+   is for screen locking and unlocking.  For the "Unlocking command" we will
+   be starting the remote display, and for "Locking command" we will be
+   killing the remote display.
+
+   Our phones seem to have a lot of signal strength so we'll need to set the
+   Locking distance as close as possible: a distance of 1 and a duration of 2
+   seconds is reasonable.  For Unlocking distance, where we'll start the
+   remote display, a distance of 0 and duration of 2 is reasonable.  You may
+   need to tune these depending on the demo environment.
+
+   To set these, click on the blueproximity notification icon and chose the
+   "Proximity Details" tab.  You can click on the sliders and use the keyboard
+   arrow keys to set the values, which is a bit easier then dragging the
+   sliders for these smaller numbers.  Observe the "Measured atm" slider to
+   see what the program thinks the distance is depending upon where you move
+   the phone.  You can also edit these detection parameters manually in the
+   config file.
+
+   If you're using a bluetooth USB adaptor dongle, you can try partially
+   wrapping the dongle in aluminum foil to cut down on the sensitivity if
+   necessary.
+
+7) Setting the phone IP address and proximity locking/unlocking commands:
+
+   a) Click on the blueproximity notification icon and choose the "Locking"
+      tab.
+
+   b) The "Locking command" should be
+
+      pkill remote-jblend
+
+   c) The "Unlocking command" should be
+
+      remote-jblend -c <phone IP addr> -p 9999 -bg 1
+
+      Make sure you put the correct IP address of the phone on this line.  The
+      -p (port) should always be 9999 for the VM we're using.  The -bg 1 is
+      very important; the remote display cannot be managed by blueproximity
+      wthout it.
+
+   d) The "Proximity command" and "Command interval" values aren't important
+      to us for now and can be kept at the default gnome-screensaver-command
+      -p.
+
+   e) "Logging" can be kept at /home/aplix/blueproximity.log.  It just records
+      when blueproximity is started and stopped, as well as when the lock and
+      unlock commands are executed.  You can do
+
+      tail -f /home/aplix/blueproximity.log
+
+      in a terminal if you want to  observe these events.
+
+   f) Alternatively you can edit ~/.blueproximityrc directly to set all these
+      parameters.
+
+   g) Stop and restart blueproximity to activate the new config file values.
+
+8) Stopping or pausing blueproximity:  right click on the notification icon.
+
+9) Running the remote display manually: if blueproximity misbehaves or is not
+   performing well, you can run remote-jblend from a terminal command line and
+   just start and kill it as needed.  The program is installed in
+   /usr/local/bin so you can type the following in a terminal:
+
+   remote-jblend -c <phone IP addr> -p 9999
+
+   If the program doesn't understand what you typed it will print a usage
+   summary.
+
+   There is also an icon installed on the left side of the desktop which will
+   parse the .blueproximityrc file for an uncommented unlock command, extract
+   the IP address of the command, and launch the remote display.  It runs the
+   command:
+
+   sh -c "remote-jblend -c `grep ^unlock_command /home/aplix/.blueproximityrc
+   | awk '{print $5}'` -p 9999 -bg 1"
+
+   When the remote display is launched from blueproximity, the -bg 1 flag must
+   be used so that the display is run in the background to prevent
+   blueproximity from blocking waiting for the program to finish.  The -bg 1
+   flag also prevents the display from printing any error messages or
+   information output, as these will also cause blueproximity to block.  If
+   the display is run manually from the command line the -bg 1 flag can be
+   left out so that it is easier to observe what is going on.
+
+10)Running the demo: Start blueproximity and make sure that notification icon
+   appears and responds to moving the phone toward and away from the laptop.
+   Then move away from the laptop and launch the demo midlet on the phone.
+   Move toward the laptop to trigger the proximity detection and launch the
+   remote display.  Moving away from the phone will kill the remote display.
+   The phone will be notified of the availability status of the remote display
+   and the demo midlet should respond accordingly.
+
+   Blueproximity doesn't immediately start the remote display when you launch
+   blueproximity; it waits until the phone has moved out of proximity and then
+   back in again.  If you need the remote display to run immediately after
+   starting blueproximity, then you have to start it manually after
+   blueproximity starts.  This is useful if you want to start the demo midlet
+   while near the laptop.  Note though that this state only exists immediately
+   after launching blueproximity: once you move through a proximity transition
+   then the remote display will always be running in the background if you are
+   in proximity.
+
+   The remote display is not visible when it starts up.  Every two seconds it
+   will try to connect to the IP address of the phone.  Once it makes a
+   successful connection it will show the remote display window on the
+   desktop; otherwise it will remain invisible.  If you need to make sure that
+   the display program is not running, do:
+
+   pkill remote-jblend
+   
+   and then quit BlueProximity from the notification icon if you want to shut
+   that down as well.  There is an icon labeled "Kill Remote Display Demo" on
+   the desktop that will do both.  It runs the command:
+
+   sh -c "pkill remote-jblend; kill `ps -ef | grep proximity.py | grep -v grep
+   | awk '{print $2}'`"
+

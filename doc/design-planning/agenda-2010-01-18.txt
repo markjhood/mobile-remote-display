@@ -1,0 +1,43 @@
+MIDP 3 Remote Display Discovery and Usage Demo
+2010 Mobile World Congress
+
+Agenda for planning meeting 2010-01-18 10:30am TPO / 6:30pm SFO
+
+1) Intros
+
+2) Questions about general user scenarios?  We are planning two demos:
+
+   a) remote midlet display based on MIDP3 Auxiliary Display functionality
+   b) LifeManager demo with external events
+
+3) Discussion of resources and assignments for remote display based on
+   attached implementation breakdown.  I am estimating 4 man-weeks of work for
+   SFO and 6 man-weeks of work for TPO with a calendar deadline of February 14
+   (27 days from now).
+
+   a) JBlend internals team: 2 person-weeks TPO
+   b) Network functionality teams: 2 person-weeks TPO; 1 person-week SFO
+   c) Midlet programming team: 2 person-weeks TPO
+   d) Auxiliary Display host: 1 person-week SFO
+   e) Integration, testing, debugging: 2 person-weeks SFO
+
+4) Discussion of external event generator for LifeManager demo.  The Zeemote
+   controller will be used translate a button presses on the controller into
+   standard MIDP3 key presses on the handset over the Bluetooth connection.
+
+   We are requesting TPO to modify the JBlend AMS to listen for button presses
+   from the Zeemote controller (a standard Bluetooth device) and generate
+   JKT_EventData objects posted through AhEvents_post() broadcasts, as
+   described in the MIDP3 Interface Reference:
+   
+   http://radweb.aplix.co.jp/jblend/doc/review/midp30/yamagami/20090501/jblend_if_midp30_marv_en_0_92_00_d01/
+
+   Issue: Will the AMS automatically be able to receive all key events, or
+   does it have to be "active"? That is, if another native Windows Mobile
+   application is open and active, will the AMS be able to receive key events?
+
+   The exact event names and order will be provided later by Angus.  We don't
+   have a resource estimate for this task yet, but it doesn't seem like it
+   should take more than one man-week.
+
+-- Mark

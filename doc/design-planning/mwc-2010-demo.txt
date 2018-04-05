@@ -1,0 +1,226 @@
+		MIDP 3 Remote Display Discovery and Usage Demo
+			  2010 Mobile World Congress
+		Functional Requirements and High Level Design
+
+Rev: January 8, 2010, V0.2
+
+User Scenario
+-------------
+
+A traveler is planning a trip to a conference in a city within driving
+distance.  She consults her MIDP3 enabled phone and gets driving directions to
+the convention center parking lot along with walking directions from the lot
+to the exhibition booths in which she is interested.  She then puts the phone
+in her purse, gathers her backpack, and goes to her car.
+
+As soon as she starts the car, her MIDP3 navigation midlet running on her
+phone in her purse detects the presence of car's telematics and infotainment
+system and discovers that there is a dashboard display in the car that is
+available for use by MIDP3 midlets.  The navigation midlet then queries the
+display properties and immediately starts using it as an auxiliary display for
+the driving directions.  Our user is in a bit of a hurry and really
+appreciates that she doesn't have to program the car's navigation system or
+even retrieve her phone from her purse.
+
+Once at the parking lot, she exits the car and gets her trusty phone from her
+purse.  The MIDP3 midlet detects that the remote display is no longer in
+proximity, cuts the connection, and starts displaying walking directions on
+her handset to get from her car to the booths in the exhibition hall.  She
+takes notes and snaps pictures of the various devices on display.  Later, she
+uses her phone to get back to her car and drives back to the office using the
+directions automatically displayed on the dashboard.  At the office, she
+approaches her desktop computer, which then offers to connect to her phone's
+photo and document library so that she can review her notes and discuss the
+conference with her co-workers on the larger display.
+
+
+The Demo
+--------
+
+We won't be literally demonstrating all the elements of the above user
+scenario, but we should be able to demonstrate the key elements of the Aplix
+MIDP3 and JBlend technology that will enable the experience described above,
+and get vendors and operators excited about the possibilities.  These key
+elements are:
+
+1) Auxiliary Display proximity detection.  We want to be able to detect a
+   Bluetooth connection to a laptop and on the basis of signal strength
+   determine that the handset is close enough to the laptop to use as an
+   auxiliary display.  
+
+   Issue 1:  Do the Bluetooth APIs and JSRs provide a way to implement this
+   proximity detection?
+
+      a) Yes, JSR 82 provides DiscoverAgent and DiscoveryListener classes.
+
+   Issue 2:  What's the best way to determine if the Bluetooth connection is
+   hosting an Auxiliary Display?  The JBlend implementation must be able to
+   sort out the myriad of Bluetooth connections present in an exhibition booth
+   and know which one with which to connect.
+
+      a) JSR 82 provides service registration APIs for the server and service
+         discovery APIs for the client.  These are based on service records
+         and connection URLs based on the service record.
+
+   Issue 3: What alternatives do we have if Bluetooth is not suitable for
+   proximity detection or hosting the Auxiliary Display protocol?
+
+      a) Use WiFi, ping the reserved IP of the laptop until it appears (either
+         turning on the laptop or turning on its radio).
+      b) Abandon wireless and move into proximity state when a USB cable is
+         plugged in.
+
+   Issue 10: Do we have the resources and expertise to implement the Bluetooth
+   connection in time for MWC?
+
+      a) Seems risky.  Consensus seems to be that WiFi is easier.
+
+2) Creation and destruction of an auxiliary display.  The MIDP3 implementation
+   must make available an Auxiliary Display when in the proximity state and
+   provide it in the list of Displays returned by the static getDisplays(int)
+   method of Display.  When removed from proximity the getHardwareState()
+   method must return DISPLAY_HARDWARE_ABSENT so that midlets can redirect
+   their output back to the handset primary Display.
+
+   In addition, any DisplayListener objects registered through the
+   addDisplayListener() method of any Display will have the appropriate
+   methods called in response to the creation and destruction of Auxiliary
+   Displays. 
+
+3) Auxiliary Display aware MIDP3 midlets.  We need to implement midlets that
+   will register DisplayListeners to detect the existence of an Auxiliary
+   Display in proximity.  At that point they will query the properties of the
+   Display and configure themselves to render optimally on that display.  In
+   the proximity state the midlets must continue to respond to DisplayListener
+   method calls to address size changes, Display state changes, and hardware
+   state changes.  If the Auxiliary Display hardware state transitions to
+   DISPLAY_HARDWARE_ABSENT is returned, the midlets must must revert to
+   rendering on the primary handset Display only.
+
+   The midlet display and implementation can be mostly mocked up.  However, we
+   want to give some flavor of the user scenario described above.  The midlet
+   display on the Auxiliary Display should show in some obvious way that they
+   are the same midlets running on the handset, but configured to display
+   optimally on the laptop.  In particular a user-effected change to a
+   midlet's state on the handset should show up immediately on the laptop.
+
+   Issue 4 (resolved): Is there a better way for a midlet to discover the
+   presence of an Auxiliary Display then by polling getDisplays() and
+   getHardwareState()?  If not, then the polling granularity may need to be
+   carefully tuned to balance latency and performance.
+
+       a) Yes, use DisplayListener.
+
+4) Image display protocol.  
+
+   One possibility that was considered was to leverage Microsoft's Remote
+   Display Protocol (RDP) for Mobile technology.  However, while it is clear
+   the functionality for rendering a desktop screen to a handset is available
+   and works reasonably well, the reverse (handset display to laptop) doesn't
+   seem to exist.  It is also not clear if RDP allows differences in
+   appearance between the host and client other than color depth and scaling.
+
+   There is probably also more development work involved in diverting
+   rendering from the Display to the RDP protocol elements than in simply
+   grabbing pixels from the image buffer and sending images, although the
+   latter will not perform as well.
+
+   Therefore, we need to design a protocol for transmitting and receiving
+   images between the handset and the Auxiliary Display, along with some
+   simple mechanisms to increase performance.  At a minimum the protocol will
+   support subimages specified by the top-left corner along with width and
+   height so that only the rectangles with updated (dirty) pixels need to be
+   transmitted.  Image move elements can be used to move static rectangles
+   around and also improve scrolling performance.  Some simple form of
+   run-length encoding or other compression may also be needed for
+   performance.
+
+   The protocol must also support all the relevant queries expected of a MIDP3
+   Display.  For the demo this can just be baked into the implementation.
+
+   Issue 5:  On what transport protocol should we layer the image protocol
+   onto?
+
+       a) Standard TCP sockets if Bluetooth supports it, especially since we
+          may need the possibility of using WiFi.
+
+       b) However, JSR 82 only directly supports the RFCOMM serial port,
+          L2CAP, and OBEX protocols.  TCP/IP support requires the PAN
+          (Personal Area Network) Bluetooth profile.
+
+   Issue 6:  Are there any available image protocols that we can leverage?
+
+       a) Depends on the Auxiliary Display host platform; it might be possible
+          to take pieces of VNC for Windows, or use X11 images on Linux.  That
+          might be overkill for our demo however.
+
+   Issue 7:  Why transmit pixels?
+
+       a) Performance can certainly be improved by submitting graphics
+          commands over the connection instead of pixels.  However, JBlend has
+          some notion of pixel accuracy, so the Auxiliary Display host would
+          need to implement JBlend graphics primitives on its side.  We would
+          also need to modify every JBlend graphics operation on the handset
+          side to send commands instead of updating an image buffer, and
+          implement the individual protocol elements to support them.
+
+       b) Pixels provide the most generic and conceptually cleaner
+          implementation on the Auxiliary Display host.
+
+5) JBlend image transport implementation.  MIDP3 midlets will not know
+   anything about image transport.  They will simply use the Auxiliary Display
+   for rendering as long as it is available for use.
+
+   The JBlend implementation must respond to midlet repaints on the Auxiliary
+   Display by copying the pixels out of image buffer, encoding them into the
+   image transport protocol, and shipping them out to the Auxiliary Display
+   host laptop.
+
+   It may be possible to get away with transmitting the entire image buffer,
+   but most likely we will need to maintain dirty rectangles to subset the
+   image.  We can then either compute a single bounding rectangle or transmit
+   individual dirty rectangles.  We should also determine if unaltered pixel
+   rectangles are simply being moved around (such as in scrolling or dragging)
+   so that the Auxiliary Display can be updated without transmitting any
+   pixels in those cases.
+
+6) Auxiliary Display host software.  This is the software running on the
+   laptop that will implement the Auxiliary Display.  It has the following
+   main functions:
+
+   a) Support Auxiliary Display proximity detection as described in 1) above.
+      It must indicate that a MIDP3 Auxiliary Display is available and listen
+      for connections, and only proceed with connections to handsets that
+      indicate that they can use an Auxiliary Display.  For the demo we will
+      ignore security concerns.
+      
+   b) Support all image protocol elements and render them onto its Auxiliary
+      Display.  We may want to make use of the car telematics mockup as a
+      basis for the appearance of the display.
+
+   c) Respond to out-of-proximity state transmitted by the handset, shut down
+      the connection and graphics display cleanly, and then prepare to accept
+      new connections.
+
+   Issue 8:  What host platform?
+
+       a) Probably Windows, although Mac OS X and Linux are intriguing since
+          they support X11.  Since the handset will be running Windows Mobile
+          we would need to get an X11 client library (Xlib) for Windows Mobile
+          however.  VNC is also available for Mac and Linux.
+
+   Issue 9:  Do we support direct interaction with the Auxiliary Display that
+   affects the state of the midlets running on the handset?
+
+       a) We are mainly leveraging the Auxiliary Display functionality that is
+          provided by MIDP3 and emphasizing that this makes it easy for
+          midlets to display on remote devices.
+
+	  However, each Display, including Auxiliary Displays, has input
+          capability, such as softkeys and navigation.  If we have the
+          resources we should explore the possibility of some minimal
+          interaction cababilities.
+
+       b) It would be nice to support resizing, but not necessary.
+
+

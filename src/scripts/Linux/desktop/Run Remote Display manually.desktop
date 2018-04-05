@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Run Remote Display manually
+Type=Application
+Terminal=false
+Icon[en_US]=gnome-panel-launcher
+Name[en_US]=Run Remote Display manually
+Exec=sh -c "remote-jblend -c `grep ^unlock_command ~/.blueproximityrc | awk '{print $5}'` -s `grep demo_mode ~/.blueproximityrc | awk '{print $3}'` -p 9999 -bg 1"
+Icon=/usr/local/share/remote-jblend/car-headunit-640x480.jpg
+GenericName[en_US]=

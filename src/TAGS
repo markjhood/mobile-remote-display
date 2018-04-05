@@ -1,0 +1,212 @@
+
+/export/MWC-2010-multidisplay-demo/src/cmd.c,157
+sendFlush(6,60
+sendDisplayEvent(13,214
+sendImageHeader(62,1429
+sendImageRGB24Header(80,2037
+sendImageRGB32Header(88,2250
+sendImageRGB565Header(96,2445
+
+/export/MWC-2010-multidisplay-demo/src/cmd.h,21
+#define _cmd_h_2,16
+
+/export/MWC-2010-multidisplay-demo/src/demotest.c,27
+usage(14,223
+main(29,940
+
+/export/MWC-2010-multidisplay-demo/src/fb.c,751
+struct _fb 8,99
+error(40,804
+fbNew(47,859
+fbNewWithSize(88,2041
+fbFree(151,3832
+fbClear(163,3979
+fbImageNull(176,4245
+fbDisplayX(183,4324
+fbDisplayY(189,4374
+fbDisplayWidth(195,4433
+fbDisplayHeight(201,4500
+fbWindowWidth(207,4569
+fbWindowHeight(213,4634
+fbDisplayDotPitch(219,4701
+fbDisplayOrientation(225,4774
+fbImage(231,4847
+fbImageSize(237,4906
+fbImageFormat(243,4967
+fbHardwareState(249,5032
+fbDisplayStatus(255,5101
+fbDisplayCapabilities(261,5170
+fbTestImageRGB32(267,5243
+fbTestImageRGB24(303,6215
+#define GETxywh(337,6860
+fbReadImageRGB32Request(344,7007
+fbReadImageRGB24Request(369,7398
+fbReadImageRGB565Request(399,7887
+fbReadBlitRequest(434,8591
+fbReadState(447,8919
+fbSetState(531,11202
+fbDispatch(543,11505
+
+/export/MWC-2010-multidisplay-demo/src/fb.h,2135
+#define _fb_h_2,15
+#define FB_NULL 14,435
+#define FB_SMALL_DASH 15,461
+#define FB_LARGE_DASH 16,487
+#define FB_PRESENTATION 17,513
+#define FB_SMALL_DASH_WIDTH 23,657
+#define FB_SMALL_DASH_HEIGHT 24,692
+#define FB_LARGE_DASH_WIDTH 26,728
+#define FB_LARGE_DASH_HEIGHT 27,763
+#define FB_PRESENTATION_WIDTH 29,799
+#define FB_PRESENTATION_HEIGHT 30,834
+#define FB_SMALL_DASH_DISPLAY_WIDTH 32,870
+#define FB_SMALL_DASH_DISPLAY_HEIGHT 33,911
+#define FB_SMALL_DASH_DISPLAY_XUL 34,952
+#define FB_SMALL_DASH_DISPLAY_YUL 35,993
+#define FB_LARGE_DASH_DISPLAY_WIDTH 37,1035
+#define FB_LARGE_DASH_DISPLAY_HEIGHT 38,1076
+#define FB_LARGE_DASH_DISPLAY_XUL 39,1117
+#define FB_LARGE_DASH_DISPLAY_YUL 40,1158
+#define FB_PRESENTATION_DISPLAY_WIDTH 42,1200
+#define FB_PRESENTATION_DISPLAY_HEIGHT 43,1243
+#define FB_PRESENTATION_DISPLAY_XUL 44,1286
+#define FB_PRESENTATION_DISPLAY_YUL 45,1329
+#define FB_IMAGE_NULL 52,1569
+#define FB_IMAGE_RGB32 53,1595
+#define FB_IMAGE_RGB24 54,1621
+#define FB_IMAGE_RGB565 55,1647
+#define FB_DISPLAY_HARDWARE_ENABLED 62,1768
+#define FB_DISPLAY_HARDWARE_DISABLED 63,1807
+#define FB_DISPLAY_HARDWARE_ABSENT 64,1846
+#define FB_STATE_BACKGROUND 67,1907
+#define FB_STATE_VISIBLE 68,1937
+#define FB_STATE_FOREGROUND 69,1967
+#define FB_ORIENTATION_PORTRAIT 72,2016
+#define FB_ORIENTATION_LANDSCAPE 73,2055
+#define FB_ORIENTATION_PORTRAIT_180 74,2094
+#define FB_ORIENTATION_LANDSCAPE_180 75,2133
+#define FB_SUPPORTS_INPUT_EVENTS 80,2236
+#define FB_SUPPORTS_COMMANDS 81,2287
+#define FB_SUPPORTS_FORMS 82,2338
+#define FB_SUPPORTS_TICKER 83,2389
+#define FB_SUPPORTS_TITLE 84,2440
+#define FB_SUPPORTS_ALERTS 85,2491
+#define FB_SUPPORTS_LISTS 86,2542
+#define FB_SUPPORTS_TEXTBOXES 87,2593
+#define FB_SUPPORTS_TABBEDPANES 88,2644
+#define FB_SUPPORTS_FILESELECTORS 89,2695
+#define FB_SUPPORTS_MENUS 90,2746
+#define FB_SUPPORTS_IDLEITEM 91,2797
+#define FB_SUPPORTS_ORIENTATION_PORTRAIT 92,2848
+#define FB_SUPPORTS_ORIENTATION_LANDSCAPE 93,2899
+#define FB_SUPPORTS_ORIENTATION_PORTRAIT180 94,2950
+#define FB_SUPPORTS_ORIENTATION_LANDSCAPE180 95,3001
+typedef struct _fb *fb;fb97,3053
+
+/export/MWC-2010-multidisplay-demo/src/pixbufs.c,679
+#define FRAME_DELAY 25,663
+static const char *image_names[image_names27,687
+#define N_IMAGES 37,908
+static GdkPixbuf *images[images40,966
+static char *image_paths[image_paths56,1608
+#define N_PATHS 70,1861
+#define BACKGROUND_320x240 72,1905
+#define BACKGROUND_600x400 73,1957
+#define BACKGROUND_800x600 74,2009
+static GdkPixbuf *frame1;frame177,2125
+static GdkPixbuf *frame2;frame278,2151
+static GdkPixbuf *background;background81,2201
+static gint back_width,82,2231
+static gint back_width, back_height;82,2231
+find_image_file(89,2429
+load_pixbufs(129,3476
+#define CYCLE_LEN 187,4782
+static int frame_num;189,4804
+drawFrame(192,4834
+do_pixbufs(266,6685
+
+/export/MWC-2010-multidisplay-demo/src/pixbufs.h,0
+
+/export/MWC-2010-multidisplay-demo/src/protocol.h,890
+#define _protocol_h_2,21
+#define PROTOCOL_MAJOR 8,199
+#define PROTOCOL_MINOR 9,227
+#define PROTOCOL_SUBMINOR 10,255
+#define DISPLAY	15,312
+#define KEY_PRESSED	16,335
+#define KEY_RELEASED	17,361
+#define POINTER_PRESSED	18,388
+#define POINTER_DRAGGED	19,418
+#define POINTER_RELEASED	20,448
+#define IMAGE_RGB32	21,478
+#define IMAGE_RGB565	22,526
+#define IMAGE_RGB24	23,575
+#define BLIT	24,623
+#define FLUSH	25,644
+#define DISPLAY_LENGTH 30,730
+#define KEY_PRESSED_LENGTH 31,764
+#define KEY_RELEASED_LENGTH 32,798
+#define POINTER_PRESSED_LENGTH 33,832
+#define POINTER_DRAGGED_LENGTH 34,866
+#define POINTER_RELEASED_LENGTH 35,900
+#define BLIT_LENGTH 36,934
+#define FLUSH_LENGTH 37,968
+#define CMD_FIXED_LENGTH_MAX 40,1038
+#define IMAGE_HEADER_LENGTH 43,1118
+#define DEFAULT_PORT 46,1195
+#define GET_OPCODE(49,1274
+#define GET_LENGTH(50,1308
+#define IS_IMAGE(53,1399
+
+/export/MWC-2010-multidisplay-demo/src/proximity/Darwin/AppController.h,175
+int thisVersionMajor 7,208
+int thisVersionMinor 8,234
+typedef enum _BPStatus 10,261
+	InRange,11,286
+	OutOfRange12,296
+} BPStatus;13,308
+@interface AppController 15,321
+
+/export/MWC-2010-multidisplay-demo/src/remote.c,417
+#define SMALL_DASH_BACKGROUND 14,259
+#define LARGE_DASH_BACKGROUND 15,316
+usage(18,388
+static fb f;40,1671
+static stream s;41,1684
+static int port;43,1702
+static int socket;44,1719
+static int verbose;45,1738
+static int inputTag;46,1758
+static char *ipaddr;ipaddr47,1779
+onDockClick(61,2222
+main(72,2401
+waitForConnection(254,7329
+onRead(289,8577
+onExpose(340,9988
+onClose(424,12743
+onTerm(453,13583
+
+/export/MWC-2010-multidisplay-demo/src/stream.c,381
+struct _stream 12,189
+error(38,877
+doConnect(49,1085
+doListen(81,1983
+streamNew(130,3696
+streamOpen(166,4568
+streamClose(210,5629
+streamFree(222,5817
+streamSocket(246,6183
+htonlv(256,6383
+ntohlv(268,6593
+#define ELAPSED(277,6714
+#define INTERVAL 281,6843
+#define LEN 284,6920
+rate(287,6951
+sendWords(304,7356
+streamSendCommand(335,8283
+streamReadCommand(385,9771
+
+/export/MWC-2010-multidisplay-demo/src/stream.h,103
+#define _stream_h_2,19
+typedef struct _stream *stream;stream4,39
+#define STREAM_DISCONNECT 51,1828

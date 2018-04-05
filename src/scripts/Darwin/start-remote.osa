@@ -1,0 +1,5 @@
+(*
+ * Called by Proximity.app to launch remote-jblend.app.
+ *)
+tell application "remote-jblend" to activate
+

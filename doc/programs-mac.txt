@@ -1,0 +1,49 @@
+---------------
+remote-jblend and demotest are cross-platform and run as described in
+programs-linux.txt.  They are built into build/Darwin/bin and can only be run
+if the GTK-OSX jhbuild system has been installed on the Mac.  remote-jblend is
+bundled into a Mac OS X app bundle named "remote-jblend.app" and is built into
+the build/Darwin directory.  It is self-contained and should run on any Mac OS
+X 10.6 machine.  The demotest program is not bundled.
+
+In addition, there are two other app bundles included with the Mac build:
+Proximity.app and Remote Display Setup.app.
+
+Proximity.app monitors Bluetooth proximity to a specified phone, launches the
+remote display when it is in proximity, and kills it when it goes out of
+proximity.  It is modified version of the open source application available on
+the Internet, hacked to accept Bluetooth MAC addresses directly without using
+the GUI, and also modifies the proximity detection to be somewhat less
+sensitive.  To modify and build it you will need to use Xcode.
+
+Proximity.app detects proximity simply by trying to connect to the phone
+through bluetooth.  It doesn't use the RSSI (Received Signal Strength
+Indicator) that BlueProximity on Linux uses, so it doesn't required a paired
+phone.  However, the proximity detection is less reliable and tunable as a
+result.
+
+Remote Display Setup.app is an AppleScript application which gets the required
+phone information from the user, offers to set up an ad-hoc WiFi network if
+desired, and then launches Proximity.app.  It must be run whenever a new phone
+needs to be used with the demo.  Once it is run then the demo can be launched
+by running remote-jblend.app directly, or Proximity.app can be run to launch
+the remote display based on proximity.  It can also be used to start the demo
+after the phone has been set up by just accepting all the defaults.
+
+----------------
+If you have the GTK-OSX jhbuild system installed, you can do a quick test of
+remote-jblend.app without a phone or Bluetooth proximity:
+
+1) Run Remote Display Setup and specify:
+   - small or large dashboard
+   - no ad-hoc WiFi
+   - use the Mac's IP address instead of the phone
+   - enter an arbitrary Bluetooth address
+   - don't launch Proximity.app
+   - run the remote display to start the demo
+
+2) In a Terminal or shell, change directory to build/Darwin/bin.
+
+3) Run ./demotest -p 9999
+
+4) ctrl-C to quit

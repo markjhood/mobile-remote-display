@@ -1,0 +1,8 @@
+MIDlet-1: NavigationDemo, , NavigationDemo
+MIDlet-Jar-URL: NavigationDemo.jar
+MIDlet-Name: NavigationDemo
+MIDlet-Vendor: Aplix Corp.
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-3.0
+MIDlet-Jar-Size: 1567953

@@ -1,0 +1,233 @@
+                MIDP 3 Remote Display Discovery and Usage Demo
+                          2010 Mobile World Congress
+                           Communications Protocol
+
+Rev: June 5, 2010, V1.0.0
+
+The protocol is a very simple, stateless, bidirectional stream of variable
+length Requests (from the handset to the host) and Events (from the host to
+the handset).  There are no transactions that require a round trip to or from
+handset or host for completion.
+
+Every Request or Event has a common header format of 4 bytes so that dispatch
+can be decoupled from the code that implements each protocol element.  Every
+Request or Event is a multiple of 4 bytes (32 bits) in length.  All protocol
+elements are in big-endian network byte order.
+
+
+Header
+------
+
+The header starts with a one-byte opcode followed by a length field of 3
+bytes.  The length field specifies the number of 32-bit words contained in the
+entire request or event, including the header and the variable length data
+that follows.
+
+24 bits for the length field is quite more than we'll need for the demo, but
+16 bits is just a little short, supporting a maximum image size of 256 x 256
+32-bit pixels.
+
+This is the format of the header common to all Requests and Events:
+
+- opcode -  length in 32-bit words  -
+|---8----|---8----|---8----|---8----|
+
+
+Events
+------
+
+DISPLAY: opcode 0x01; length 6 words
+
+This is the first event transmitted by the host to the handset upon making a
+connection.  It is also generated whenever the remote display changes state.
+Upon receipt of this event, the JBlend software on the handset must update the
+state of the Auxiliary Display and update any registered DisplayListeners.
+
+It contains the following data in order:
+
+  1) protocol version number:  4 bytes, initially 1.0.0
+
+     - unused - major  - minor  - submin -
+     |---8----|---8----|---8----|---8----|
+
+  2) display state: 2 bytes for hardware state (enabled, disabled, absent),
+     followed by 2 bytes for display state (foreground, background, visible)
+
+     -     hw state    - display status  -
+     |---8----|---8----|---8----|---8----|
+
+  3) display capabilities: 32-bit word with bits set as specified by the MIDP3
+     getCapabilities() method of Display
+
+  4) display metrics: 2 bytes for width, followed by 2 bytes for height, then
+     2 bytes for dot pitch in micrometers followed by 2 bytes for orientation
+     (as specified by the MIDP3 getOrientation() method of Display).
+
+     -      width      -      height     -
+     -    dot pitch    -    orientation  -
+     |---8----|---8----|---8----|---8----|
+
+
+KEY PRESSED: opcode 0x02; length 2 words
+
+This event is generated in response to a keyboard press.  There is one word of
+data, the key code as defined by MIDP3.
+
+     -             key code              -
+     |---8----|---8----|---8----|---8----|
+
+KEY RELEASED: opcode 0x03; length 2 words
+
+     -             key code              -
+     |---8----|---8----|---8----|---8----|
+
+
+POINTER PRESSED: opcode 0x04; length 2 words
+
+Generated in response to a pointer press.  The one word of data consists of 2
+bytes for X followed by 2 bytes for Y.
+
+     -        X        -        Y        -
+     |---8----|---8----|---8----|---8----|
+
+POINTER DRAGGED: opcode 0x05; length 2 words
+
+     -        X        -        Y        -
+     |---8----|---8----|---8----|---8----|
+
+POINTER RELEASED: opcode 0x06; length 2 words
+
+     -        X        -        Y        -
+     |---8----|---8----|---8----|---8----|
+
+
+Requests
+--------
+
+IMAGE RGB32: opcode 0x07; variable length
+
+This request transmits a rectangular region of RGB32 pixels to the remote
+display.  The length of the request depends upon the dimensions of the image
+and must be set in the header to include position, dimensions, pixel data, and
+the header itself.
+
+  1) position and dimensions: The first word after the header consists of 2
+     bytes for X and 2 bytes for Y; the second word is 2 bytes for width and 2
+     bytes for height.
+
+     -        X        -        Y        -
+     -      width      -      height     -
+     |---8----|---8----|---8----|---8----|
+
+  2) pixel data: each pixel is 32 bits in length, consisting of red, green
+     blue, and alpha components of 8 bits each, in that order.  The pixel
+     data appears after the command header (opcode + length), the XY, and WH
+     words (a 3 word total offset).
+
+     -  red   - green  -  blue  - alpha  -
+     |---8----|---8----|---8----|---8----|
+
+
+IMAGE RGB565: opcode 0x08; variable length
+
+This request transmits a rectangular region of RGB565 pixels to the remote
+display.  The length of the request depends upon the dimensions of the image
+and must be set in the header to include position, dimensions, pixel data, 
+the header itself, and any padding in the last word.
+
+  1) position and dimensions: The first word after the header consists of 2
+     bytes for X and 2 bytes for Y; the second word is 2 bytes for width and 2
+     bytes for height.
+
+     -        X        -        Y        -
+     -      width      -      height     -
+     |---8----|---8----|---8----|---8----|
+
+  2) pixel data: each pixel is 16 bits in length, packed 2 pixels for each
+     word.  If there are an odd number of pixels then the last word is padded
+     with ignored data.  Within each pixel the 5 most significant bits
+     represent red intensity, followed by 6 bits of green, and then 5 bits of
+     blue.  The range of each color component is conceptually mapped to the
+     full intensity range of 0.0 - 1.0.
+     
+     The pixel data appears after the command header (opcode + length), the
+     XY, and WH words (a 3 word total offset).
+
+     -  R  -  G  -  B  -  R  -  G  -  B  -
+     |--5--|--6--|--5--|--5--|--6--|--5--|
+
+
+IMAGE RGB24: opcode 0x09; variable length
+
+This request transmits a rectangular region of 24-bit packed RGB pixels to the
+remote display.  The length of the request depends upon the dimensions of the
+image and must be set in the header to include position, dimensions, pixel
+data, the header itself, and any padding in last word.
+
+  1) position and dimensions: The first word after the header consists of 2
+     bytes for X and 2 bytes for Y; the second word if 2 bytes for width and 2
+     bytes for height.
+
+     -        X        -        Y        -
+     -      width      -      height     -
+     |---8----|---8----|---8----|---8----|
+
+  2) pixel data: each pixel is 24 bits in length, with 8 bits for each red,
+     green, and blue component.  The components are packed into 32-bit words
+     for transport with no unused bytes until the last word, which may be
+     padded with ignored data.
+     
+     The pixel data appears after the command header (opcode + length), the
+     XY, and WH words (a 3 word total offset).
+
+     -  red   -  green -  blue  -  red   -
+     -  green -  blue  -  red   -  green -
+     -  blue  -  red   -  green -  blue  -
+     -            et cetera              -
+     |---8----|---8----|---8----|---8----|
+
+
+                                   Issue 1
+
+  What is the optimal image format for the host and handset combination we
+  will be using for the demo?  16-bit pixels are best for limited bandwidth
+  but 32-bit pixels may be easier and faster to render.  Only one image format
+  needs to be implemented for the demo.
+
+
+BLIT: opcode 0x0a; length 4 words
+
+Copies a rectangular region of pixels on the remote display from one position
+to another.  This can be used to avoid transmitting large blocks of pixels for
+scrolling operations.  The request consists of the source position (SX, SY),
+the destination position (DX, DY), and the width and height.
+
+     -       SX        -       SY        -
+     -       DX        -       DY        -
+     -      width      -      height     -
+     |---8----|---8----|---8----|---8----|
+
+
+FLUSH: opcode 0x0b; length 1 word
+
+This request flushes out all pending requests and updates the remote display.
+In general only the changed regions of the should be transmitted from the
+handset to the remote display; since these regions will probably need to be
+broken up into separate rectangular IMAGE requests, we use FLUSH as needed to
+avoid showing an incomplete or inconsistent remote display to the user.
+
+
+Opcode Table
+------------
+
+0x01 DISPLAY          length 6
+0x02 KEY PRESSED      length 2
+0x03 KEY RELEASED     length 2
+0x04 POINTER PRESSED  length 2
+0x05 POINTER DRAGGED  length 2
+0x06 POINTER RELEASED length 2
+0x07 IMAGE RGB32      length variable
+0x08 IMAGE RGB565     length variable
+0x09 IMAGE RGB24      length variable
+0x0a BLIT             length 4
+0x0b FLUSH            length 1

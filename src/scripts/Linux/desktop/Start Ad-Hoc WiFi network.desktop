@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Start Ad-Hoc WiFi network
+Type=Application
+Terminal=false
+Icon[en_US]=gnome-panel-launcher
+Name[en_US]=Start Ad-Hoc WiFi network
+Exec=gksudo wifi-adhoc
+Icon=gnome-panel-launcher
+GenericName[en_US]=

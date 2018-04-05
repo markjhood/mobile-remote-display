@@ -1,0 +1,5 @@
+(*
+ * Called by Proximity.app to kill remote-jblend when the phone moves out of
+ * Bluetooth connection range.
+ *)
+tell application "remote-jblend" to quit

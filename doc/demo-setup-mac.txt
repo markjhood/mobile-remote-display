@@ -1,0 +1,51 @@
+MWC 2010 remote display demo set up instructions - Mac OS X 10.6
+----------------------------------------------------------------
+
+Setting up the demo on a Mac is easier than on the Linux laptop, but has a few
+caveats: 1) The demo will only run on a Mac OS X 10.6 system (Snow Leopard);
+and, 2) the Bluetooth proximity detection is considerably more sensitive and
+less tunable since Proximity.app detects proximity by paging the device and
+seeing if it responds, instead of making a connection and monitoring the RSSI
+(Received Signal Strength Indicator) as BlueProximity does.  You will usually
+have to walk some 30 feet away to move out of proximity.
+
+If you are not interested in Bluetooth proximity detection, you can ignore all
+the instructions about Bluetooth setup.  Since Proximity.app does not actually
+make a Bluetooth connection to the phone, there is no need to pair the phone
+to the laptop anyway.  All the setup needs is the Bluetooth MAC address of the
+phone and its IP address.
+
+The demo is deployed on a compressed disk image, Remote Display Demo.dmg,
+built into the build/Darwin directory.  This disk image can be copied to
+anywhere on the OS X 10.6 file system and mounted by double-clicking on it.
+Inside the mounted disk are three applications: Remote Demo Setup.app,
+Proximity.app, and remote-jblend.app.  These apps are described in the
+document programs-mac.txt.
+
+The apps don't need to copied to anywhere else in the system, though you may
+prefer to copy them to your Applications directory.  You should be able to run
+them directly out of the mounted disk image.
+
+To set up the demo for a specific phone, run Remote Display Setup.app by
+double-clicking on it.  It will ask you for the phone's Bluetooth MAC address
+and IP address, unless you are only running the Slide Presentation demo, which
+doesn't use Bluetooth proximity detection.  It may also ask you to enable
+access for assistive devices so that GUI scripting can be activated; in that
+case you'll have to cancel out of the setup, enable the access, and then
+re-run the setup.
+
+You'll also get a chance to set up an ad-hoc WiFi network in case a managed
+WiFi access point is not available.  This is somewhat unreliable however; the
+network set up must be scripted through the GUI, which is a fairly fragile
+process, and Bluetooth paging interferes with ad-hoc WiFi networking, making
+getting a connection pretty random.  Some phones don't connect very well to
+ad-hoc networks to begin with either.  GUI scripting failure during the ad-hoc
+network setup is not uncommon; if that happens you can usually recover by
+re-running the setup.  If you have access to a managed WiFi access point at
+the demo site you should use it.
+
+Once the setup is run for a specific phone and network, you can run the demo
+by launching Proximity.app, or launch remote-jblend.app directly, or just
+re-run the setup.  If you need to use another phone or network you'll have to
+re-run the setup again.  All the configuration is stored in the Mac OS X
+defaults database.

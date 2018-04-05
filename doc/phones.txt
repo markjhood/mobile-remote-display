@@ -1,0 +1,14 @@
+label   model           Bluetooth MAC addr  link-local WiFi addr  paired Zeemote
+
+NO:8917 Touch 2         00:23:D4:0E:4F:DE
+OS-DV11 Touch 2         00:22:A5:C5:99:EE   169.254.163.208       Z-DV1
+OS-DV16 Touch 2         00:22:A5:DB:44:21
+OS-DV18 Touch Pro 2     00:09:2D:FB:DE:C9   169.254.254.105       Z-DV3
+OS-DV19 Touch Pro 2     00:09:2D:FB:A4:64                         Z-DV2
+
+OS-DV20 Touch Pro 2     00:23:76:76:D4:E8
+OS-DV22 Touch Pro 2     00:23:76:76:CE:93
+OS-DV23 Touch Pro 2     00:09:2D:FB:A4:72
+
+OS-DV27 Toshiba         00:23:18:DB:AE:19   169.254.130.113
+OS-DV14 Palm Pre        00:1D:FE:37:83:6B
