@@ -1,7 +1,7 @@
 # mobile-remote-display
 MWC 2010 demo archive: mobile handset to desktop remote screen with proximity detection
 
-In late 2009 while working at Aplix Corporation I designed a proof-of-concept
+In early 2010 while working at Aplix Corporation I designed a proof-of-concept
 demonstration of remote display capabilities for phones running Aplix Java
 virtual machines (JBlend / J2ME / MIDP3).
 
