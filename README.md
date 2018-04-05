@@ -16,13 +16,18 @@ user control would transfer seemlessly back to the phone.
 
 I led a small international team to implement the demo in time for the 2010
 Mobile World Congress, with engineers in Asia working on display assets and
-the modifications to the JBlend JVM, while I implemented the proximity
-detection, the network display protocol, and the display clients for Mac OSX
-and Linux.  The display clients were Linux-based and made cross-platform to
-OSX by using the GTK-OSX jhbuild system (http://gtk-osx.sourceforge.net).
+the modifications to the JBlend JVM, while I implemented the display clients 
+for Mac OSX and Linux, the network display protocol, and integrated existing
+open source bluetooth proximity into the demo. The display clients are 
+Linux-based and made cross-platform to OSX by using the GTK-OSX jhbuild system 
+(http://gtk-osx.sourceforge.net).
 
 Most of documentation of the design and build instructions are in the included
 doc directory.  Since this package was also intended to be built and used by
 customer engineers, special attention was made to provide as much hand-holding
 as possible when building, installing, and configuring the demonstration, but
 it's unlikely that this package could be built and run today.
+
+I'm archiving this package here since it's one of the few complete projects I'm
+able to share in public. It documents my design, engineering process, and style 
+to some extent, and the low-level code is pretty clean.
