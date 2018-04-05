@@ -17,5 +17,5 @@ and made cross-platform to OSX by using the GTK-OSX jhbuild system (http://gtk-o
 
 Most of documentation of the design and build instructions are in the included doc directory.  Since this package was
 also intended to be built and used by customer engineers, special attention was made to provide as much hand-holding as
-possible when building, installing, and configuring the application, but it unlikely that this package could be built and 
+possible when building, installing, and configuring the application, but it's unlikely that this package could be built and 
 run today.
