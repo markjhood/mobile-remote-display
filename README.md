@@ -15,11 +15,12 @@ Once out of proximity the connection would be torn down and the display and
 user control would transfer seemlessly back to the phone.
 
 I led a small international team to implement the demo for the 2010
-Mobile World Congress, with engineers in Asia working on display assets and
+Mobile World Congress. Engineers in Asia worked on the display assets and
 the modifications to the JBlend JVM, while I implemented the display clients, 
 the network display protocol, and integrated existing open source bluetooth 
-proximity into the demo. The display clients are Linux-based and made cross-platform 
-to OSX by using the GTK-OSX jhbuild system (http://gtk-osx.sourceforge.net).
+proximity detection code into a complete demo. The display client is primarily 
+Linux-based but it was ported to OSX by using the GTK-OSX jhbuild integration 
+system (http://gtk-osx.sourceforge.net).
 
 Most of documentation of the design and build instructions are in the included
 doc directory.  Since this package was also intended to be built and used by
